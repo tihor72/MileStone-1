@@ -1,0 +1,234 @@
+using System;
+
+public class Pet
+{
+    public int PetId{get; set;}
+    public string Name{get; set;}
+    public string Type{get; set;}
+    public int Age{get; set;}
+
+    public Pet(int id, string name, string type, int age)
+    {
+        PetId = id;
+        Name = name;
+        Type = type;
+        Age = age;
+    }
+
+    public Pet()
+    {
+        Name = string.Empty;
+        Type = string.Empty;
+    }
+}
+
+public class PetManager
+{
+    public Dictionary<int, Pet> pets = new Dictionary<int, Pet>();
+
+    public void AddPet(Pet pet)
+    {
+        if(pets.ContainsKey(pet.PetId))
+        {
+            Console.WriteLine($"A pet with ID {pet.PetId} already exists.");
+        }else{
+            pets.Add(pet.PetId, pet);
+            Console.WriteLine("Pet added successfully.");
+        }
+    }
+
+    public void EditPet(int petId, string newName, string newType, int newAge)
+    {
+        if(pets.ContainsKey(petId))
+        {
+            pets[petId].Name = newName;
+            pets[petId].Type = newType;
+            pets[petId].Age = newAge;
+            Console.WriteLine("Pet details updated successfully.");
+        }else{
+            Console.WriteLine($"No pet found with ID {petId}.");
+        }
+    }
+}
+
+public class Program
+{
+    public static void Main(string[] args)
+    {
+        PetManager manager = new PetManager();
+        bool exit = false;
+        while(!false)
+        {
+            Console.WriteLine("Menu:");
+            Console.WriteLine("1. Add Pet");
+            Console.WriteLine("2. Edit Pet by ID");
+            Console.WriteLine("3. Exit");
+            Console.Write("Enter your choice: ");
+            string choice = Console.ReadLine();
+            switch(choice)
+            {
+                case "1":
+                    Console.Write("Enter Pet ID: ");
+                    int idadd = int.Parse(Console.ReadLine());
+
+                    Console.Write("Enter Pet Name: ");
+                    string nameadd = Console.ReadLine();
+
+                    Console.Write("Enter Pet Type: ");
+                    string typeadd = Console.ReadLine();
+
+                    Console.Write("Enter Pet Age: ");
+                    int ageadd = int.Parse(Console.ReadLine());
+
+                    Pet p = new Pet(idadd, nameadd, typeadd, ageadd);
+                    manager.AddPet(p);
+                    break;
+
+                case "2":
+                    Console.Write("Enter Pet ID to edit: ");
+                    int idedit = int.Parse(Console.ReadLine());
+
+                    Console.Write("Enter new Pet Name: ");
+                    string nameedit = Console.ReadLine();
+
+                    Console.Write("Enter new Pet Type: ");
+                    string typeedit = Console.ReadLine();
+
+                    Console.Write("Enter new Pet Age: ");
+                    int ageedit = int.Parse(Console.ReadLine());
+
+                    manager.EditPet(idedit, nameedit, typeedit, ageedit);
+                    break;
+
+                case "3":
+                    exit = true;
+                    Console.WriteLine("Exiting program...");
+                    return;
+
+                default:
+                    Console.WriteLine("Invalid choice, please try again.");
+                    break;
+            }
+        }
+    }
+}
+
+____________________________________________________________________________________________________________________________________________________________________________________________________________________
+using System;
+
+    public class Animal
+    {
+        public int AnimalId { get; set; }
+        public string Name { get; set; }
+        public string Type { get; set; }
+        public int Age { get; set; }
+
+        // public Animal(int AnimalId, string name, string type, int age)
+        // {
+        //     AnimalId = AnimalId;
+        //     Name = name;
+        //     Type = type;
+        //     Age = age;
+        // }
+        public Animal()
+        {
+            Name = string.Empty;
+            Type = string.Empty;
+        }
+    }
+
+    public class AnimalManager
+    {
+        public Dictionary<int, Animal> animals = new Dictionary<int, Animal>();
+
+        public void AddAnimal(Animal animal)
+        {
+            if (Animals.ContainsKey(animal.AnimalId))
+            {
+                Console.WriteLine($"A Animal with ID {animal.AnimalId} already exists.");
+            }
+            else
+            {
+                Animals[animal.AnimalId] = animal;
+                Console.WriteLine("Animal added successfully.");
+            }
+        }
+
+        public void EditAnimal(int animalId, string newName, string newType, int newAge)
+        {
+            if (Animals.ContainsKey(animalId))
+            {
+                Animals[animalId].Name = newName;
+                Animals[animalId].Type = newType;
+                Animals[animalId].Age = newAge;
+                Console.WriteLine("Animal details updated successfully.");
+            }
+            else
+            {
+                Console.WriteLine($"No Animal found with ID {animalId}.");
+            }
+        }
+    }
+
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            AnimalManager animalManager = new AnimalManager();
+            bool exit = false;
+
+            while (!exit)
+            {
+                Console.WriteLine("Menu:");
+                Console.WriteLine("1. Add Animal");
+                Console.WriteLine("2. Edit Animal by ID");
+                Console.WriteLine("3. Exit");
+                Console.Write("Enter your choice: ");
+                string input = Console.ReadLine();
+
+                switch (input)
+                {
+                    case "1":
+                        Console.Write("Enter Animal ID: ");
+                        int addId = int.Parse(Console.ReadLine());
+                        Console.Write("Enter Animal Name: ");
+                        string name = Console.ReadLine();
+                        Console.Write("Enter Animal Type: ");
+                        string type = Console.ReadLine();
+                        Console.Write("Enter Animal Age: ");
+                        int age = int.Parse(Console.ReadLine());
+
+                        //Animal newAnimal = new Animal(addId, name, type, age);
+                        Animal newAnimal = new Animal();
+                        newAnimal.AnimalId = addId;
+                        newAnimal.Name = name;
+                        newAnimal.Type = type;
+                        newAnimal.Age = age;
+                        animalManager.AddAnimal(newAnimal);
+                        break;
+
+                    case "2":
+                        Console.Write("Enter Animal ID: ");
+                        int editId = int.Parse(Console.ReadLine());
+                        Console.Write("Enter new name: ");
+                        string newName = Console.ReadLine();
+                        Console.Write("Enter new Animal type: ");
+                        string newType = Console.ReadLine();
+                        Console.Write("Enter new Animal age: ");
+                        int newAge = int.Parse(Console.ReadLine());
+
+                        animalManager.EditAnimal(editId, newName, newType, newAge);
+                        break;
+
+                    case "3":
+                        Console.WriteLine("Exiting program...");
+                        exit = true;
+                        break;
+
+                    default:
+                        Console.WriteLine("Invalid choice, please try again.");
+                        break;
+                }
+            }
+        }
+    }
