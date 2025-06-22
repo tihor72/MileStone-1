@@ -1,0 +1,66 @@
+=================LIST OF CRUD ===============
+ 
+1. public void Add(Employee employee){}
+
+--bool c = li.Exists(k=>k.EmployeeID==employee.EmployeeID);
+ 
+2. public void Display(){}
+
+--if(li.Count>0)
+ 
+3.public void SortAsc(){}
+
+--li.Sort((a,b)=>a.Name.CompareTo (b.Name));
+ 
+4. public void Update(int id,string name,int ag){}
+
+--var c = li.FirstOrDefault(k=>k.EmployeeID==id);
+ 
+5. public void DeletId(int id){}
+
+-- var c = li.FirstOrDefault(k=>k.EmployeeID==id);
+ 
+ ================ DICTIONARY CRUD ================
+ 
+1. public void AddPet(Employee emp){}
+
+   ---if(dict.ContainsKey(emp.EmpId))
+
+   --- Add(emp.EmpId,em)
+ 
+2.public void Display(){}
+
+        ---if(dict.Count>0)
+
+            ---foreach (var item in dict.Values)
+ 
+3. public void EditPet(int id,string name,int age)
+
+        ---if(dict.ContainsKey(id))
+
+            --var c = dict[id];
+ 
+4. public void SearchByName(string name){}
+
+        ---var c =dict.Values.Where(k=>k.Name==name)
+ 
+5. public void DeletePet(int id){}
+
+        ---if(dict.ContainsKey(id))
+
+==============================================================================================================
+
+ 
+Console.WriteLine("Exiting the Program...");
+ 
+Console.WriteLine("Invalid ...............................");
+ 
+if these test cases are there then you need to include these 2
+ 
+direct print statements in the main? ans:Yes
+ 
+
+if these test cases are there then you need to include these 2
+understood.
+ 
+else no need of anything if above everything is correct
