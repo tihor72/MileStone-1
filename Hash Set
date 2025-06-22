@@ -335,3 +335,145 @@ namespace MS_Practice_Collections
     //    }
     //}
 }
+
+
+_____________________________________________________________________________________________________________________________________________________________
+
+using System;
+using System.Collections.Generic;
+ 
+public class Student
+{
+    public int StudentID {get;set;}
+    public string Name {get;set;}
+    public int Age {get;set;}
+ 
+    public Student(int id, string name, int age)
+    {
+        StudentID=id;
+        Name=name;
+        Age=age;
+    }
+ 
+}
+ 
+public class StudentManager
+{
+    public HashSet<Student> students {get;set;} = new HashSet<Student>();
+ 
+    public void AddStudent(Student student)
+    {
+        var stu = students.FirstOrDefault(s=>s.StudentID==student.StudentID);
+ 
+        if(stu == null){
+            students.Add(student);
+            Console.WriteLine("Student Added.");
+        }
+        else{
+            Console.WriteLine("Already exists");
+        }
+ 
+    }
+ 
+    public void DisplayStudent()
+    {
+        if(students.Count==0){
+            Console.WriteLine("No Student available to display ");
+        }
+        else{
+            foreach (var item in students)
+            {
+                Console.WriteLine($"StudentID: {item.StudentID}, Name: {item.Name}, Age: {item.Age} ");
+               
+            }
+        }
+ 
+    }
+ 
+    public void UpdateStudent(int id, string newname, int newage)
+    {
+    var upd = students.FirstOrDefault(s=>s.StudentID==id);
+    if(upd==null){
+            Console.WriteLine("No Student available to update");
+    }
+    else{
+        upd.Name=newname;
+        upd.Age=newage;
+        Console.WriteLine("successfully student details updated");
+    }
+       
+ 
+    }
+ 
+    public void SearchByName(string name)
+    {
+        var sname = students.Where(v=>v.Name==name).ToList();
+        if(sname.Count==0)
+        {
+        Console.WriteLine("No Student name available to search");  
+        return;        
+        }
+       
+       
+            foreach (var item in sname)
+            {
+                Console.WriteLine($"StudentID: {item.StudentID}, Name: {item.Name}, Age: {item.Age}");
+               
+            }
+       
+    }
+ 
+    public void SearchByID(int id)
+    {
+        var sid = students.FirstOrDefault(s=>s.StudentID==id);
+ 
+        if(sid==null)
+        {        
+        Console.WriteLine("No Student id available to search");          
+        }
+        else
+        {
+            foreach (var item in students)
+            {
+             Console.WriteLine($"StudentID: {item.StudentID}, Name: {item.Name}, Age: {item.Age}");              
+            }
+           
+        }
+ 
+       
+    }
+ 
+ 
+ 
+ 
+}
+ 
+public class Program
+{
+    public static void Main(string[] args)
+    {
+        StudentManager manager = new StudentManager();
+ 
+        Student s = new Student(1,"sharath", 21);
+ 
+        // manager.AddStudent(s);
+        // manager.DisplayStudent();
+ 
+        // manager.UpdateStudent(1,"bharath", 23);
+        // manager.DisplayStudent();
+ 
+        // manager.SearchByID(3);
+ 
+        manager.SearchByName("Charan");
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+    }
+}
+
+________________________________________________________________________________________________________________________________________________________________________________
