@@ -1,0 +1,340 @@
+using System.Data;
+using ConsoleApp1.Models;
+using Microsoft.Data.SqlClient;
+
+namespace ConsoleApp1
+{
+    internal class Program
+    {
+        public static class ConnectionStringProvider
+        {
+            public static string ConnectionString { get; }
+            = "server=localhost;Database=LTIMindTreeDotNetTraining;integrated security=true;TrustServerCertificate=true";
+
+        }
+
+        public class Program1
+        {
+            public static string connectionString = ConnectionStringProvider.ConnectionString;
+            static int id = 0;
+            public static void Main(string[] args)
+            {
+                while (true)
+                {
+                    Console.WriteLine("Menu:");
+                    Console.WriteLine("1 - Add Car");
+                    Console.WriteLine("2 - List Cars");
+                    Console.WriteLine("3 - Delete Car");
+                    Console.WriteLine("4 - SearchCarWithMake_Option1");
+                    Console.WriteLine("5 - SearchCarWithModel_Option1");
+                    Console.WriteLine("6 - Show Top n Records");
+                    Console.WriteLine("7 - Show Bottom n Records");
+                    Console.WriteLine("8 - Show Cars In Date Range");
+                    Console.WriteLine("9 - Exit");
+                    Console.Write("Enter your choice: ");
+
+                    string choice = Console.ReadLine();
+
+                    switch (choice)
+                    {
+                        case "1":
+                            //Console.Write("Enter Car ID: ");
+                            // int id = int.Parse(Console.ReadLine());
+
+                            Console.Write("Enter Car Make: ");
+                            string carmake = Console.ReadLine();
+
+                            Console.Write("Enter Car Model: ");
+                            string model = Console.ReadLine();
+
+                            Console.Write("Enter Year: ");
+                            int year = int.Parse(Console.ReadLine());
+
+                            Console.Write("Enter Service Date (dd-MM-yyyy): ");
+                            string serviceDate = Console.ReadLine();
+
+                            //Car car = new Car(carmake, model, year, serviceDate);
+                            Car objCar = new Car();
+                            objCar.CarMake = carmake;
+                            objCar.CarModel = model;
+                            objCar.Year = year;
+                            objCar.ServiceDate = serviceDate;
+                            AddCar(objCar);
+                            break;
+
+                        case "2":
+                            ListCars();
+                            break;
+
+                        case "3":
+                            Console.Write("Enter the CarID of the car to delete: ");
+                            int carID = int.Parse(Console.ReadLine());
+                            DeleteCar(carID);
+                            break;
+                        case "4":
+                            //Search By Make
+                            Console.Write("Enter the Make of the car to Search: ");
+                            string carMakeSearch1 = Console.ReadLine();
+                            SearchCarWithMake_Option1(carMakeSearch1);
+                            break;
+                        case "5":
+                            //Search By Model
+                            Console.Write("Enter the Model of the car to Search: ");
+                            string carModelSearch1 = Console.ReadLine();
+                            SearchCarWithModel(carModelSearch1);
+                            break;
+                        case "6":
+                            //Show Top n Recoreds
+                            Console.Write("Enter no of rows to select from top: ");
+                            int count = int.Parse(Console.ReadLine());
+                            GetTopRecords(count);
+                            break;
+                        case "7":
+                            //Show Bottom n Recoreds
+                            Console.Write("Enter no of rows to select from bottom:");
+                            int countBottom = int.Parse(Console.ReadLine());
+                            GetBottomRecords(countBottom);
+                            break;
+                        case "8":
+                            //Show Cars In Date Range
+                            Console.Write("Enter the ServiceStartDate of the car: ");
+                            string serviceStartDate = Console.ReadLine();
+                            Console.Write("Enter the ServiceEndDate of the car: ");
+                            string serviceEndDate = Console.ReadLine();
+                            //
+                            SearchCarWithServiceDateRange(serviceStartDate, serviceEndDate);
+                            break;
+                        case "9":
+                            return;
+                        default:
+                            Console.WriteLine("Invalid choice");
+                            break;
+                    }
+                }
+
+            }
+
+            // use DataRow to add new Record
+            public static void AddCar(Car v)
+            {
+
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+                    //
+                    SqlCommand command = new SqlCommand("SELECT * FROM Cars WHERE CarID = @CarID", connection);
+                    command.Parameters.AddWithValue("@CarID", v.CarID);
+                    SqlDataAdapter adapter = new SqlDataAdapter();
+                    adapter.SelectCommand = command;
+                    DataSet dataSet = new DataSet();
+                    adapter.Fill(dataSet);
+
+                    if (dataSet.Tables[0].Rows.Count > 0)
+                    {
+                        Console.WriteLine($"A car with ID {v.CarID} already exists.");
+                        return;
+                    }
+
+                    command.CommandText = "INSERT INTO Cars (CarMake, CarModel, Year, ServiceDate) VALUES (@Make, @Model, @Year, @serviceDate)";
+                    command.Parameters.AddWithValue("@Make", v.CarMake);
+                    command.Parameters.AddWithValue("@Model", v.CarModel);
+                    command.Parameters.AddWithValue("@Year", v.Year);
+                    command.Parameters.AddWithValue("@serviceDate", v.ServiceDate);
+
+                    command.ExecuteNonQuery();
+                    Console.WriteLine("Car added successfully.");
+                }
+            }
+
+            public static void ListCars()
+            {
+
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+
+                    using (SqlDataAdapter adapter = new SqlDataAdapter("SELECT * FROM Cars", connection))
+                    {
+                        DataSet dataSet = new DataSet();
+                        adapter.Fill(dataSet);
+
+                        if (dataSet.Tables[0].Rows.Count == 0)
+                        {
+                            Console.WriteLine("No Cars available.");
+                            return;
+                        }
+
+                        Console.WriteLine("Car List:");
+                        foreach (DataRow row in dataSet.Tables[0].Rows)
+                        {
+                            Console.WriteLine($"CarID: {row["CarID"]}\tCarMake: {row["CarMake"]}\tCarModel: {row["CarModel"]}\tYear: {row["Year"]}\tService Date: {row["ServiceDate"]}");
+                        }
+
+                    }
+                }
+            }
+
+            public static void DeleteCar(int carID)
+            {
+                SqlConnection conn = new SqlConnection(connectionString);
+                string query = "SELECT * FROM Cars";
+                SqlDataAdapter da = new SqlDataAdapter(query, conn);
+                SqlCommandBuilder builder = new SqlCommandBuilder(da);
+                DataSet ds = new DataSet();
+
+                da.Fill(ds, "Cars");
+
+                // Find the row based on the CarID
+                DataRow[] rows = ds.Tables["Cars"].Select($"CarID = {carID}");
+
+                if (rows.Length == 1)
+                {
+                    rows[0].Delete();      // Delete the row if it exists
+                    da.Update(ds, "Cars"); // Update the DataSet to reflect the deletion in the database
+                    Console.WriteLine("Car deleted successfully.");
+                }
+                else
+                {
+                    Console.WriteLine("Car not found.");
+                }
+            }
+
+            public static void SearchCarWithModel(string carModel)
+            {
+                SqlConnection conn = new SqlConnection(connectionString);
+                string query = "SELECT * FROM Cars where CarModel = @CarModel";
+                SqlCommand objCom = new SqlCommand(query, conn);
+                objCom.Parameters.AddWithValue("@CarModel", carModel);
+                SqlDataAdapter da = new SqlDataAdapter(objCom);
+                SqlCommandBuilder builder = new SqlCommandBuilder(da);
+                DataSet ds = new DataSet();
+
+                da.Fill(ds, "Cars");
+
+                if (ds.Tables[0].Rows.Count > 0)
+                {
+                    Console.WriteLine("Car Details:");
+                    foreach (DataRow row in ds.Tables[0].Rows)
+                    {
+                        Console.WriteLine($"CarID: {row["CarID"]}\tCarMake: {row["CarMake"]}\tCarModel: {row["CarModel"]}\tYear: {row["Year"]}\tService Date: {row["ServiceDate"]}");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Car not found.");
+                }
+            }
+
+            public static void SearchCarWithServiceDateRange(string serviceStartDate, string serviceEndDate)
+            {
+                SqlConnection conn = new SqlConnection(connectionString);
+                string query = "select * from Cars where serviceDate between @ServiceStartDate and @ServiceEndDate";
+                SqlCommand objCom = new SqlCommand(query, conn);
+                objCom.Parameters.AddWithValue("@ServiceStartDate", serviceStartDate);
+                objCom.Parameters.AddWithValue("@ServiceEndDate", serviceEndDate);
+                SqlDataAdapter da = new SqlDataAdapter(objCom);
+                SqlCommandBuilder builder = new SqlCommandBuilder(da);
+                DataSet ds = new DataSet();
+
+                da.Fill(ds, "Cars");
+
+                if (ds.Tables[0].Rows.Count > 0)
+                {
+                    Console.WriteLine("Car Details:");
+                    foreach (DataRow row in ds.Tables[0].Rows)
+                    {
+                        Console.WriteLine($"CarID: {row["CarID"]}\tCarMake: {row["CarMake"]}\tCarModel: {row["CarModel"]}\tYear: {row["Year"]}\tService Date: {row["ServiceDate"]}");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Car not found.");
+                }
+            }
+
+            public static void GetTopRecords(int count)
+            {
+                SqlConnection conn = new SqlConnection(connectionString);
+                string query = "SELECT TOP (@Count) * FROM Cars";
+                SqlCommand objCom = new SqlCommand(query, conn);
+                objCom.Parameters.AddWithValue("@Count", count);
+                SqlDataAdapter da = new SqlDataAdapter(objCom);
+                SqlCommandBuilder builder = new SqlCommandBuilder(da);
+                DataSet ds = new DataSet();
+
+                da.Fill(ds, "Cars");
+
+                if (ds.Tables[0].Rows.Count > 0)
+                {
+                    Console.WriteLine("Car Details:");
+                    foreach (DataRow row in ds.Tables[0].Rows)
+                    {
+                        Console.WriteLine($"CarID: {row["CarID"]}\tCarMake: {row["CarMake"]}\tCarModel: {row["CarModel"]}\tYear: {row["Year"]}\tService Date: {row["ServiceDate"]}");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Car not found.");
+                }
+            }
+
+            public static void GetBottomRecords(int count)
+            {
+                SqlConnection conn = new SqlConnection(connectionString);
+                string query = "SELECT TOP (@Count) * FROM Cars order by CarID desc";
+                SqlCommand objCom = new SqlCommand(query, conn);
+                objCom.Parameters.AddWithValue("@Count", count);
+                SqlDataAdapter da = new SqlDataAdapter(objCom);
+                SqlCommandBuilder builder = new SqlCommandBuilder(da);
+                DataSet ds = new DataSet();
+
+                da.Fill(ds, "Cars");
+
+                if (ds.Tables[0].Rows.Count > 0)
+                {
+                    Console.WriteLine("Car Details:");
+                    foreach (DataRow row in ds.Tables[0].Rows)
+                    {
+                        Console.WriteLine($"CarID: {row["CarID"]}\tCarMake: {row["CarMake"]}\tCarModel: {row["CarModel"]}\tYear: {row["Year"]}\tService Date: {row["ServiceDate"]}");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Car not found.");
+                }
+            }
+
+            //-----------------------
+
+            public static void SearchCarWithMake_Option1(string carMake)
+            {
+                SqlConnection conn = new SqlConnection(connectionString);
+                string query = "SELECT * FROM Cars";
+                SqlCommand objCom = new SqlCommand(query, conn);
+                SqlDataAdapter da = new SqlDataAdapter(objCom);
+                SqlCommandBuilder builder = new SqlCommandBuilder(da);
+                DataSet ds = new DataSet();
+
+                da.Fill(ds, "Cars");
+
+                // Find the row based on the CarID
+                string safeCarMake = carMake.Replace("'", "''"); // escape single quotes
+                //DataRow[] rows = ds.Tables["Cars"].Select($"CarMake = '{safeCarMake}'");
+                DataRow[] rows = ds.Tables["Cars"].Select("CarModel = '" + carMake + "'");
+
+                if (rows.Length > 0)
+                {
+                    Console.WriteLine("Car Details:");
+                    foreach (DataRow row in rows)
+                    {
+                        Console.WriteLine($"CarID: {row["CarID"]}\tCarMake: {row["CarMake"]}\tCarModel: {row["CarModel"]}\tYear: {row["Year"]}\tService Date: {row["ServiceDate"]}");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Car not found.");
+                }
+            }
+        }
+    }
+}
