@@ -1,0 +1,172 @@
+using System;
+using System.Collections;
+
+namespace MS_Practice_Collections
+{
+    public class Animal
+    {
+        public int AnimalId { get; set; }
+        public string Name { get; set; }
+        public string Type { get; set; }
+        public int Age { get; set; }
+
+        public Animal()
+        {
+            Name = "";
+            Type = "";
+        }
+    }
+
+    public class AnimalManager
+    {
+        private ArrayList animals = new ArrayList(); // Using ArrayList instead of LinkedList
+
+        public void AddAnimal(Animal animal)
+        {
+            foreach (Animal a in animals)
+            {
+                if (a.AnimalId == animal.AnimalId)
+                {
+                    Console.WriteLine("An animal with ID " + animal.AnimalId + " already exists.");
+                    return;
+                }
+            }
+
+            animals.Add(animal);
+            Console.WriteLine("Animal added successfully.");
+        }
+
+        public void EditAnimal(int animalId, string newName, string newType, int newAge)
+        {
+            foreach (Animal a in animals)
+            {
+                if (a.AnimalId == animalId)
+                {
+                    a.Name = newName;
+                    a.Type = newType;
+                    a.Age = newAge;
+                    Console.WriteLine("Animal details updated successfully.");
+                    return;
+                }
+            }
+
+            Console.WriteLine("No animal found with ID " + animalId + ".");
+        }
+
+        public void SearchByName(string name)
+        {
+            bool found = false;
+            foreach (Animal a in animals)
+            {
+                if (a.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
+                {
+                    Console.WriteLine("ID: " + a.AnimalId + ", Name: " + a.Name + ", Type: " + a.Type + ", Age: " + a.Age);
+                    found = true;
+                }
+            }
+
+            if (!found)
+            {
+                Console.WriteLine("No animal found with name '" + name + "'.");
+            }
+        }
+
+        public void ListAnimals()
+        {
+            if (animals.Count == 0)
+            {
+                Console.WriteLine("No animals in the list.");
+                return;
+            }
+
+            Console.WriteLine("Animal List:");
+            foreach (Animal a in animals)
+            {
+                Console.WriteLine("ID: " + a.AnimalId + ", Name: " + a.Name + ", Type: " + a.Type + ", Age: " + a.Age);
+            }
+        }
+    }
+
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            AnimalManager manager = new AnimalManager();
+            bool exit = false;
+
+            while (!exit)
+            {
+                Console.WriteLine("\nMenu:");
+                Console.WriteLine("1. Add Animal");
+                Console.WriteLine("2. Edit Animal by ID");
+                Console.WriteLine("3. Search Animal by Name");
+                Console.WriteLine("4. List All Animals");
+                Console.WriteLine("5. Exit");
+                Console.Write("Enter your choice: ");
+                string choice = Console.ReadLine();
+
+                switch (choice)
+                {
+                    case "1":
+                        Console.Write("Enter Animal ID: ");
+                        int id = int.Parse(Console.ReadLine());
+
+                        Console.Write("Enter Animal Name: ");
+                        string name = Console.ReadLine();
+
+                        Console.Write("Enter Animal Type: ");
+                        string type = Console.ReadLine();
+
+                        Console.Write("Enter Animal Age: ");
+                        int age = int.Parse(Console.ReadLine());
+
+                        Animal animal = new Animal
+                        {
+                            AnimalId = id,
+                            Name = name,
+                            Type = type,
+                            Age = age
+                        };
+
+                        manager.AddAnimal(animal);
+                        break;
+
+                    case "2":
+                        Console.Write("Enter Animal ID to edit: ");
+                        int editId = int.Parse(Console.ReadLine());
+
+                        Console.Write("Enter new name: ");
+                        string newName = Console.ReadLine();
+
+                        Console.Write("Enter new type: ");
+                        string newType = Console.ReadLine();
+
+                        Console.Write("Enter new age: ");
+                        int newAge = int.Parse(Console.ReadLine());
+
+                        manager.EditAnimal(editId, newName, newType, newAge);
+                        break;
+
+                    case "3":
+                        Console.Write("Enter name to search: ");
+                        string searchName = Console.ReadLine();
+                        manager.SearchByName(searchName);
+                        break;
+
+                    case "4":
+                        manager.ListAnimals();
+                        break;
+
+                    case "5":
+                        exit = true;
+                        Console.WriteLine("Exiting program...");
+                        break;
+
+                    default:
+                        Console.WriteLine("Invalid choice. Try again.");
+                        break;
+                }
+            }
+        }
+    }
+}
