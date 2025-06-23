@@ -196,6 +196,74 @@ namespace dotnetapp
             }
         }
 
+        public static void UpdateCar(int carID, string newMake, string newModel, DateTime newDateAdded)
+        {
+            using (SqlConnection con = new SqlConnection(connectionString))
+            {
+                SqlDataAdapter adp = new SqlDataAdapter("SELECT * FROM Cars", con);
+                DataSet ds = new DataSet();
+                adp.Fill(ds, "Cars");
+                DataTable dt = ds.Tables["Cars"];
+
+                bool found = false;
+                foreach (DataRow row in dt.Rows)
+                {
+                    if ((int)row["CarID"] == carID)
+                    {
+                        row["Make"] = newMake;
+                        row["Model"] = newModel;
+                        row["DateAdded"] = newDateAdded;
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found)
+                {
+                    Console.WriteLine("Car not found.");
+                    return;
+                }
+
+                SqlCommandBuilder builder = new SqlCommandBuilder(adp);
+                adp.Update(ds, "Cars");
+                Console.WriteLine("Car updated successfully.");
+            }
+        }
+
+        public static void GetCarById(int carID)
+        {
+            using (SqlConnection con = new SqlConnection(connectionString))
+            {
+                SqlDataAdapter adp = new SqlDataAdapter("SELECT * FROM Cars", con);
+                DataSet ds = new DataSet();
+                adp.Fill(ds, "Cars");
+                DataTable dt = ds.Tables["Cars"];
+
+                foreach (DataRow row in dt.Rows)
+                {
+                    if ((int)row["CarID"] == carID)
+                    {
+                        Console.WriteLine($"{row["CarID"]}, {row["Make"]}, {row["Model"]}, {row["DateAdded"]}");
+                        return;
+                    }
+                }
+
+                Console.WriteLine("Car not found.");
+            }
+        }
+
+        public static void CountCars()
+        {
+            using (SqlConnection con = new SqlConnection(connectionString))
+            {
+                SqlDataAdapter adp = new SqlDataAdapter("SELECT * FROM Cars", con);
+                DataSet ds = new DataSet();
+                adp.Fill(ds, "Cars");
+                int count = ds.Tables["Cars"].Rows.Count;
+                Console.WriteLine($"Total number of cars: {count}");
+            }
+        }
+
         public static void Main(string[] args)
         {
             bool exit = false;
@@ -210,75 +278,8 @@ namespace dotnetapp
                 Console.WriteLine("6 - Show Top n Records");
                 Console.WriteLine("7 - Show Bottom n Records");
                 Console.WriteLine("8 - Show Cars In Date Range");
-                Console.WriteLine("9 - Exit");
-                Console.Write("Enter your choice (1-9): ");
-
-                int choice = int.Parse(Console.ReadLine());
-                switch (choice)
-                {
-                    case 1:
-                        Console.Write("Enter Make: ");
-                        string make = Console.ReadLine();
-                        Console.Write("Enter Model: ");
-                        string model = Console.ReadLine();
-                        Console.Write("Enter Date Added (yyyy-mm-dd): ");
-                        DateTime dateAdded = DateTime.Parse(Console.ReadLine());
-
-                        Car car = new Car { Make = make, Model = model, DateAdded = dateAdded };
-                        AddCar(car);
-                        break;
-
-                    case 2:
-                        ListCars();
-                        break;
-
-                    case 3:
-                        Console.Write("Enter Car ID to delete: ");
-                        int carID = int.Parse(Console.ReadLine());
-                        DeleteCar(carID);
-                        break;
-
-                    case 4:
-                        Console.Write("Enter Make to search: ");
-                        string searchMake = Console.ReadLine();
-                        SearchCarWithMake(searchMake);
-                        break;
-
-                    case 5:
-                        Console.Write("Enter Model to search: ");
-                        string searchModel = Console.ReadLine();
-                        SearchCarWithModel(searchModel);
-                        break;
-
-                    case 6:
-                        Console.Write("Enter number of top records to show: ");
-                        int topN = int.Parse(Console.ReadLine());
-                        ShowTopNRecords(topN);
-                        break;
-
-                    case 7:
-                        Console.Write("Enter number of bottom records to show: ");
-                        int bottomN = int.Parse(Console.ReadLine());
-                        ShowBottomNRecords(bottomN);
-                        break;
-
-                    case 8:
-                        Console.Write("Enter start date (yyyy-mm-dd): ");
-                        DateTime startDate = DateTime.Parse(Console.ReadLine());
-                        Console.Write("Enter end date (yyyy-mm-dd): ");
-                        DateTime endDate = DateTime.Parse(Console.ReadLine());
-                        ShowCarsInDateRange(startDate, endDate);
-                        break;
-
-                    case 9:
-                        Console.WriteLine("Exiting the application...");
-                        exit = true;
-                        break;
-
-                    default:
-                                               break;
-                }
-            }
-        }
-    }
-}
+                Console.WriteLine("9 - Update Car");
+                Console.WriteLine("10 - Get Car By ID");
+                Console.WriteLine("11 - Count Cars");
+                Console.WriteLine("12 - Exit");
+                Console.Write("Enter your choice 
