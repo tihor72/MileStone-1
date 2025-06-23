@@ -9,6 +9,8 @@ namespace dotnetapp.Models
     }
 }
 
+// if table has to be deleted at each time we run the code-
+Drop TABLE IF EXISTS Cars;
 
 CREATE TABLE Cars (
     CarID INT PRIMARY KEY IDENTITY(1,1),
@@ -16,6 +18,8 @@ CREATE TABLE Cars (
     Model NVARCHAR(50),
     DateAdded DATETIME
 );
+
+
 
 using System;
 using System.Data;
